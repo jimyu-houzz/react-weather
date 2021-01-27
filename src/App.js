@@ -1,5 +1,5 @@
 
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
 const api = {
   key: "502af55bf364766f3fc8c4378edc37db",
@@ -13,12 +13,14 @@ function App() {
   const search = event => {
     // only when user types enter whill trigger the fetch
     if(event.key === "Enter"){
-      fetch(`${api.base}weather?q=${query}&units=metrix&APPID=${api.key}`)
+      fetch(`${api.base}weather?q=${query}&units=metric&APPID=${api.key}`)
         .then(res => res.json())
         .then(result => {
+          console.log(weather);
+          console.log(result);
+          console.log('typeof??', typeof(result));
           setWeather(result);
           setQuery(''); // refresh the query back to empty string
-          console.log(result);
         })
     }
   }
@@ -38,7 +40,7 @@ function App() {
   }
 
   return (
-    <div className="app">
+    <div className={(typeof weather.main != "undefined") ? ((weather.main.temp > 18) ? "app warm" : "app") : "app"}>
       <main>
         <div className="search-box">
           <input 
@@ -50,16 +52,20 @@ function App() {
             onKeyPress={search}
           />
         </div>
-        <div className="location-box">
-          <div className="location">Taipei City, Taiwan</div>
-          <div className="data">{dateBuilder(new Date())}</div>
-        </div>
-        <div className="weather-box">
-          <div className="temp">
-            15
+        
+        {(typeof weather.main != "undefined") ?  (
+        <div>
+          <div className="location-box">
+            <div className="location">{weather.name}, {weather.sys.country}</div>
+            <div className="data">{dateBuilder(new Date())}</div>
           </div>
-          <div className="weather">Sunny</div>
+          <div className="weather-box">
+            <div className="temp">{Math.round(weather.main.temp*10)/10}°c</div>
+            <div className="weather">{weather.weather[0].main}</div>
+          </div>
         </div>
+        ) : ('')}
+
       </main>
     </div>
   );
